@@ -7,7 +7,7 @@
     playbook: "{{ cluster_job_template_openshift_auth_playbook }}"
     project: "{{ cluster_job_template_openshift_auth_project }}"
     credential: "{{ tower_credential_bundle_default_name }}"
-    extra_vars_path: "files/openshift_cluster_auth.yml"
+    extra_vars_path: "roles/cluster/files/openshift_cluster_auth.yml"
     state: present
     inventory: "{{ tower_inventory_name }}"
   register: cluster_create_openshift_auth_out
