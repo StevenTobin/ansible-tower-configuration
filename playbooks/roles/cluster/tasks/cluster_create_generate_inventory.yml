@@ -36,13 +36,19 @@
       recurse: yes
       state: directory
  
+  - name: Get provisioning vars template file
+    get_url:
+      url: https://raw.githubusercontent.com/fheng/integreatly_dev/cluster_create/files/provisioning_vars.yml.j2
+      dest: "/tmp/integreatly-inventory.yml.j2"   
+      force: yes
+
   - name: set logging flag
     set_fact:
         flag_provision_logging: "{% if survey_provision_logging=='true' %}true{% elif survey_provision_logging=='false'%}false{% else %}false{% endif %}"
 
   - name: create the provisioning_vars.yml
     template:
-      src: integreatly-inventory.yml.j2
+      src: "/tmp/integreatly-inventory.yml.j2"
       dest: "/tmp/{{ oo_clusterid }}/{{ oo_clusterid }}_inventory.yml"
 
   - name: Create provisioning inventory in tower

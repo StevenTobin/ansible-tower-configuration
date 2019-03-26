@@ -72,7 +72,6 @@ cluster_job_template_post_install_project: '{{ tower_configuration_project_name 
 cluster_workflow_job_template_name: "Provision Cluster"
 cluster_workflow_job_template_desc: "Provision Openshift 3.11 cluster"
 
-cluster_workflow_job_template_openshift_auth: "Openshift_Authenticate_tower_pod"
 
 # Auth
 
