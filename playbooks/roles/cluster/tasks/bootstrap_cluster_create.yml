@@ -6,6 +6,19 @@
     organization: "{{ tower_organization }}"
     state: present
 
+- name: "Create inventory source from Project: {{ tower_credentials_project_name }}"
+  tower_inventory_source:
+    name: "sourced_credentials"
+    source: "scm"
+    inventory: "{{ tower_inventory_name }}"
+    description: "From Project: {{ tower_credentials_project_name }}"
+    source_project: "{{ tower_credentials_project_name }}"
+    source_path: "inventories/hosts"
+    state: present
+
+- name: "Sync inventory source"
+  shell: "tower-cli inventory_source update sourced_credentials"
+
 - name: 'Create the secret organisation'
   tower_organization:
     name: 'secret'

@@ -7,7 +7,7 @@
     playbook: "{{ cluster_job_template_openshift_auth_playbook }}"
     project: "{{ cluster_job_template_openshift_auth_project }}"
     credential: "{{ tower_credential_bundle_default_name }}"
-    extra_vars_path: "roles/cluster/files/openshift_tower_auth.yml"
+    extra_vars_path: "files/openshift_cluster_auth.yml"
     state: present
     inventory: "{{ tower_inventory_name }}"
   register: cluster_create_openshift_auth_out
@@ -88,7 +88,6 @@
   retries: 10
   delay: 5
 
-
 - name: "Associate {{ cluster_credential_bundle_aws_name }} credentials {{ cluster_job_template_install_name }}"
   shell: tower-cli job_template associate_credential --job-template "{{ cluster_job_template_install_name }}" --credential "{{ cluster_credential_bundle_aws_name }}"
 
@@ -117,11 +116,6 @@
     state: present
     organization: "{{ tower_organization }}"
 
-- name: Create workflow schema
-  template:
-    src: workflow_schema.yml.j2
-    dest: "cluster_workflow_schema.yml"
-
 - name: Retrieve AWS Credential Type ID
   shell: "tower-cli credential_type list --kind cloud -n \"Amazon Web Services\" -f id"
   register: aws_cred_type_id
@@ -143,8 +137,12 @@
 - set_fact:
     cluster_install_survey_aws_accounts: "{{ cluster_aws_accounts | join('\\n')}}"
 
+- template:
+    src: workflow_schema.yml.j2
+    dest: "/tmp/cluster_create_schema.yml"
+
 - name: "Update Workflow job template with survey"
   shell: "tower-cli workflow modify --name=\"{{ cluster_workflow_job_template_name }}\" --survey-enabled=true --survey-spec='@{{ role_path }}/templates/workflow_survey.json'"
 
 - name: "Update Workflow job template with schema"
-  shell: "tower-cli workflow schema \"{{ cluster_workflow_job_template_name }}\" @cluster_workflow_schema.yml"
+  shell: "tower-cli workflow schema \"{{ cluster_workflow_job_template_name }}\" @/tmp/cluster_create_schema.yml"
