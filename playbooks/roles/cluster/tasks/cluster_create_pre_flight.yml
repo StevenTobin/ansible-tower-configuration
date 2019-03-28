@@ -1,8 +1,8 @@
 ---
   - name: Set AWS credentials
     set_fact:
-      aws_access_key: "{{ integreatly_inventory_source_aws_credentials | default (cluster_credential_bundle_aws_name) }}_access_key_id"
-      aws_secret_key: "{{ integreatly_inventory_source_aws_credentials | default (cluster_credential_bundle_aws_name) }}_secret_access_key"     
+      aws_access_key: "{{ lookup ('env' ,'AWS_ACCESS_KEY_ID' }}"
+      aws_secret_key: "{{ lookup ('env' ,'AWS_SECRET_ACCESS_KEY' }}"    
 
   - name: Search for tagged AMI
     ec2_ami_facts:
