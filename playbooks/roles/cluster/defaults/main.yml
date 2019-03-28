@@ -22,7 +22,7 @@ cluster_project_oa_bootstrap_scm_url: "git@github.com:openshift/openshift-ansibl
 #                            #
 
 cluster_credential_bundle_github_name: "tower_github_scm"
-cluster_credential_bundle_aws_name: ""
+cluster_credential_bundle_aws_name: "fheng.AWS"
 cluster_credential_bundle_le_key_name: 'le_privatekey'
 
 #                          #
