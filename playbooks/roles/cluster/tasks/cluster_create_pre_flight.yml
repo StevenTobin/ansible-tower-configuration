@@ -42,6 +42,11 @@
 
   - include_tasks: check_amis.yml
 
+  - name: set urls
+    set_fact:
+      base_cluster_url: "{{ oo_clusterid }}.{{ domain}}"
+      apps_cluster_url: "apps.{{ oo_clusterid}}.{{ domain }}"
+
   - name: Make sure account exists and has given contacts. We agree to TOS.
     acme_account:
         account_key_content: "{{ le_private_key }}"
