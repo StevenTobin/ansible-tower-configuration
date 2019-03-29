@@ -26,6 +26,11 @@
     debug:
       msg: "{{ g_play_image_id }}"
 
+  - name: set urls
+    set_fact:
+      base_cluster_url: "{{ oo_clusterid }}.{{ domain}}"
+      apps_cluster_url: "apps.{{ oo_clusterid}}.{{ domain }}"
+
   - name: Check if certificates exist
     stat:
       path: /tmp/{{ oo_clusterid }}/certs/wildcard.{{ base_cluster_url }}.crt
@@ -41,11 +46,6 @@
     when: crt_result.stat.exists == false or app_crt_result.stat.exists == false or rootca_result.stat.exists == false
 
   - include_tasks: check_amis.yml
-
-  - name: set urls
-    set_fact:
-      base_cluster_url: "{{ oo_clusterid }}.{{ domain}}"
-      apps_cluster_url: "apps.{{ oo_clusterid}}.{{ domain }}"
 
   - name: Make sure account exists and has given contacts. We agree to TOS.
     acme_account:
