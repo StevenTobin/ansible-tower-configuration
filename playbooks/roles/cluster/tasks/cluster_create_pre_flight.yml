@@ -42,9 +42,6 @@
   - stat: path=/tmp/{{ oo_clusterid }}/certs/rootCA.pem
     register: rootca_result
 
-  - include_tasks: generate_ssl_certs.yml
-    when: crt_result.stat.exists == false or app_crt_result.stat.exists == false or rootca_result.stat.exists == false
-
   - name: Make sure account exists and has given contacts. We agree to TOS.
     acme_account:
         account_key_content: "{{ le_private_key }}"
