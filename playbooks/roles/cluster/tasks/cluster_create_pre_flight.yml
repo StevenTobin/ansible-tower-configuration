@@ -13,7 +13,31 @@
       base_cluster_url: "{{ oo_clusterid }}.{{ domain }}"
       apps_cluster_url: "apps.{{ oo_clusterid }}.{{ domain }}"
 
-  - name: Check if certificates exist
+  - name: check s3 for certs
+    aws_s3:
+      bucket: "{{ cluster_backup_bucket_name }}"
+      mode: list
+      prefix: "certs/{{ oo_clusterid }}"
+    register: bucket_result
+
+  - name: Retrieve certs if they exist
+    block:
+      - file:
+          path: "/tmp/{{ oo_clusterid }}/certs"
+          state: directory
+      - aws_s3:
+          bucket: "{{ cluster_backup_bucket_name }}"
+          mode: get
+          object: "certs/{{ oo_clusterid }}/wildcard.{{ item }}"
+          dest: "/tmp/{{ oo_clusterid }}/certs/wildcard.{{ item }}"
+        with_items:
+          - "{{ base_cluster_url }}.crt"
+          - "{{ base_cluster_url }}.key"
+          - "{{ apps_cluster_url }}.crt"
+          - "{{ apps_cluster_url }}.key"
+    when: bucket_result.s3_keys
+
+  - name: Set Certificate variables
     stat:
       path: /tmp/{{ oo_clusterid }}/certs/wildcard.{{ base_cluster_url }}.crt
     register: crt_result
@@ -33,11 +57,6 @@
         acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
         contact:
         - mailto:integreatly-sre@redhat.com
-
-  - name: Create directory for certs
-    file:
-        path: "/tmp/{{ oo_clusterid }}/certs"
-        state: directory
 
   - name: Generate a private key and csr for the cluster cert
     block:
@@ -170,6 +189,12 @@
           aws_secret_key: "{{ dns_secret_key | default(aws_secret_key) }}"
           overwrite: true
     when: app_crt_result.stat.exists == false
+
+  - name: Retrieve rootCA if it doesn't exist
+    get_url:
+      dest: "/tmp/{{ oo_clusterid }}/certs/rootCA.pem"
+      url: https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem.txt
+    when: rootca_result.stat.exists == false
 
   - name: Create a bucket for backups
     aws_s3:
