@@ -151,11 +151,12 @@
   #
   - name: Make sure account exists and has given contacts. We agree to TOS.
     acme_account:
-        account_key_content: "{{ letsencrypt_private_key }}"
+        account_key_src: "/tmp/le_private_key"
         state: present
         terms_agreed: yes
         acme_version: 2
         acme_directory: "{{ acme_directory_url }}"
+        account_uri: "https://acme-v02.api.letsencrypt.org/acme/acct/51481684"
         contact:
         - mailto:integreatly-notifications@redhat.com
 
